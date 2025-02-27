@@ -1,5 +1,7 @@
 // 引入 Express 框架，用于创建 API 服务器
 const express = require('express');
+require('./src/models/Product');
+require('./src/models/Supplier');
 
 // 允许跨域请求的中间件
 const cors = require('cors');
@@ -24,7 +26,7 @@ app.use(express.json());
 
 // 定义 API 根路由，测试服务器是否运行正常
 app.get('/', (req, res) => {
-  res.send('Inventory Tracking API is running');
+    res.send('Inventory Tracking API is running');
 });
 
 // 设置服务器端口号，默认使用 .env 文件中的 PORT，若无则使用 5000
