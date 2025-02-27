@@ -2,6 +2,8 @@
 const express = require('express');
 require('./src/models/Product');
 require('./src/models/Supplier');
+const productRoutes = require('./src/routes/productRoutes');
+
 
 // 允许跨域请求的中间件
 const cors = require('cors');
@@ -23,6 +25,9 @@ app.use(cors());
 
 // 解析 JSON 格式的请求体
 app.use(express.json());
+
+app.use('/api/products', productRoutes);
+
 
 // 定义 API 根路由，测试服务器是否运行正常
 app.get('/', (req, res) => {
