@@ -1,38 +1,47 @@
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchProducts, updateProduct, deleteProduct } from "../store/productSlice";
+import { useState } from "react";
+import "../styles/ProductList.css"; 
 
-const ProductList = () => {
-  const dispatch = useDispatch();
-  const { items, status, error } = useSelector((state) => state.products);
+const ProductList = ({ products, onDelete, onEdit }) => {
+  const [sortField, setSortField] = useState("name");
+  const [sortOrder, setSortOrder] = useState("asc");
 
-  useEffect(() => {
-    dispatch(fetchProducts());
-  }, [dispatch]);
+  const sortedProducts = [...products].sort((a, b) => {
+    if (a[sortField] < b[sortField]) return sortOrder === "asc" ? -1 : 1;
+    if (a[sortField] > b[sortField]) return sortOrder === "asc" ? 1 : -1;
+    return 0;
+  });
 
-  if (status === "loading") return <p>Loading...</p>;
-  if (status === "failed") return <p>Error: {error}</p>;
-
-  const handleUpdateStock = (id, stock) => {
-    dispatch(updateProduct({ id, updatedData: { stock: stock + 1 } })); // 库存 +1
-  };
-
-  const handleDelete = (id) => {
-    dispatch(deleteProduct(id));
+  const handleSort = (field) => {
+    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    setSortField(field);
   };
 
   return (
-    <div>
+    <div className="product-table-container">
       <h2>Product List</h2>
-      <ul>
-        {items.map((product) => (
-          <li key={product._id}>
-            {product.name} - ${product.price} (Stock: {product.stock}) 
-            <button onClick={() => handleUpdateStock(product._id, product.stock)}>+1 Stock</button>
-            <button onClick={() => handleDelete(product._id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
+      <table className="product-table">
+        <thead>
+          <tr>
+            <th onClick={() => handleSort("name")}>Name</th>
+            <th onClick={() => handleSort("price")}>Price ($)</th>
+            <th onClick={() => handleSort("stock")}>Stock</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sortedProducts.map((product) => (
+            <tr key={product._id}>
+              <td>{product.name}</td>
+              <td>${product.price}</td>
+              <td>{product.stock}</td>
+              <td>
+                <button className="edit-btn" onClick={() => onEdit(product)}>Edit</button>
+                <button className="delete-btn" onClick={() => onDelete(product._id)}>Delete</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
